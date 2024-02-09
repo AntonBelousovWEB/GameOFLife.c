@@ -24,10 +24,13 @@ int main() {
     int resolution_loc = GetShaderLocation(gol_shader, "resolution");
     SetShaderValue(gol_shader, resolution_loc, &resolution, SHADER_UNIFORM_VEC2);
 
+    // Zoom factor
+    float zoomFactor = 0.5f;
+
     BeginTextureMode(frames[0]);
         ClearBackground(BLACK);
-        for (int i = 0; i < (WIDTH*SCALE); i++){
-            for (int j = 0; j < (HEIGHT*SCALE); j++) {
+        for (int i = 0; i < (WIDTH * SCALE); i++) {
+            for (int j = 0; j < (HEIGHT * SCALE); j++) {
                 float color = (float)(rand() % 2);
                 DrawPixel(i, j, ColorFromNormalized((Vector4){color, color, color, 1.0}));
             }
@@ -35,10 +38,20 @@ int main() {
     EndTextureMode();
 
     while (!WindowShouldClose()) {
+        // Adjust zoom factor based on keyboard input
+        if (IsKeyPressed(KEY_KP_ADD)) {
+            zoomFactor += 0.1f;
+        } else if (IsKeyPressed(KEY_KP_SUBTRACT)) {
+            zoomFactor -= 0.1f;
+            if (zoomFactor < 0.1f) zoomFactor = 0.1f; // Limit minimum zoom
+        }
+
         BeginTextureMode(frames[1 - current]);
         ClearBackground(BLACK);
         BeginShaderMode(gol_shader);
-        DrawTexture(frames[current].texture, 0, 0, RED);
+        DrawTexturePro(frames[current].texture, (Rectangle){0, 0, frames[current].texture.width, -frames[current].texture.height}, 
+                       (Rectangle){0, 0, WIDTH * zoomFactor, HEIGHT * zoomFactor}, 
+                       (Vector2){0, 0}, 0.0f, WHITE);
         EndShaderMode();
         EndTextureMode();
 
@@ -46,10 +59,11 @@ int main() {
 
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawTextureEx(frames[current].texture, (Vector2){0, 0}, 0, 1 / SCALE, RED);
+        DrawTexturePro(frames[current].texture, (Rectangle){0, 0, frames[current].texture.width, -frames[current].texture.height}, 
+                       (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()}, 
+                       (Vector2){0, 0}, 0.0f, WHITE);
         EndDrawing();
-
-
+        // WaitTime(0.5); if you want :)
     }
 
     CloseWindow();

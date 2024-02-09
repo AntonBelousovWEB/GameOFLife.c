@@ -22,13 +22,18 @@ void main() {
     for (int i = -1; i < 2; i++) {
         for (int j = -1; j < 2; j++) {
             if (abs(i) + abs(j) != 0) {
-                if (sample_position(fragTexCoord + (vec2(i, -j) * pixelsize)) == 1.0) {
-                    count++;
+                vec2 neighborTexCoord = fragTexCoord + vec2(i, -j) * pixelsize;
+                if (neighborTexCoord.x >= 0.0 && neighborTexCoord.x <= 1.0 &&
+                    neighborTexCoord.y >= 0.0 && neighborTexCoord.y <= 1.0) {
+                    if (sample_position(neighborTexCoord) == 1.0) {
+                        count++;
+                    }
                 }
             }
         }
     }
-    finalColor = texture(texture0, vec2(fragTexCoord.x, -fragTexCoord.y));
+    
+    finalColor = texture(texture0, fragTexCoord);
     finalColor -= vec4(0.5, 0.03, 0.01, 0.0);
     if (alive == 1.0) {
         if (count == 2) {finalColor = vec4(vec3(1.0), 1.0);}
