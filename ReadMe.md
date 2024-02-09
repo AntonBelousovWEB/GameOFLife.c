@@ -13,4 +13,11 @@ Welcome to the GPU implementation of Conway's Game of Life! This project explore
   
 In this project, the game evolves on the GPU, offering potentially significant performance improvements compared to traditional CPU-based implementations.
 
+### Zooming and Panning Instructions:
+
+- To zoom in, use the `+` key - `MUMLK`.
+- To zoom out, use the `-` key - `MUMLK`.
+- Press the corresponding key again to stop zooming or panning.
+
+
 Happy coding!
