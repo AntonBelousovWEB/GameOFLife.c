@@ -2,6 +2,8 @@
 
 Welcome to the GPU implementation of Conway's Game of Life! This project explores the world of graphics programming using raylib and GLSL shaders.
 
+<img src="https://i.ibb.co/FY85N47/2024-02-09-180223.png" />
+
 ## Overview:
 
 - **Project Description:** This project implements Conway's Game of Life using GPU acceleration. The game is a cellular automaton where cells on a grid evolve over time based on a set of rules.
