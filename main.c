@@ -5,6 +5,8 @@
 #define HEIGHT 1080
 #define SCALE 0.5
 
+#define NUM_ISLANDS 100
+
 int main() {
     InitWindow(WIDTH, HEIGHT, "GPU Game Of Life");
     ToggleFullscreen();
@@ -24,7 +26,6 @@ int main() {
     int resolution_loc = GetShaderLocation(gol_shader, "resolution");
     SetShaderValue(gol_shader, resolution_loc, &resolution, SHADER_UNIFORM_VEC2);
 
-    // Zoom factor
     float zoomFactor = 0.5f;
 
     BeginTextureMode(frames[0]);
@@ -38,21 +39,38 @@ int main() {
     EndTextureMode();
 
     while (!WindowShouldClose()) {
-        // Adjust zoom factor based on keyboard input
         if (IsKeyPressed(KEY_KP_ADD)) {
             zoomFactor += 0.1f;
         } else if (IsKeyPressed(KEY_KP_SUBTRACT)) {
             zoomFactor -= 0.1f;
-            if (zoomFactor < 0.1f) zoomFactor = 0.1f; // Limit minimum zoom
+            if (zoomFactor < 0.1f) zoomFactor = 0.1f; 
         }
 
         BeginTextureMode(frames[1 - current]);
         ClearBackground(BLACK);
         BeginShaderMode(gol_shader);
-        DrawTexturePro(frames[current].texture, (Rectangle){0, 0, frames[current].texture.width, -frames[current].texture.height}, 
+        DrawTexturePro(frames[current].texture, (Rectangle){
+        0, 0, 
+        frames[current].texture.width, 
+        -frames[current].texture.height}, 
                        (Rectangle){0, 0, WIDTH * zoomFactor, HEIGHT * zoomFactor}, 
-                       (Vector2){0, 0}, 0.0f, WHITE);
+                       (Vector2){0, 0}, 0.0f, RED);
         EndShaderMode();
+
+        if (IsKeyDown(KEY_KP_SUBTRACT) && zoomFactor > 0.2f) {
+            for (int k = 0; k < NUM_ISLANDS; k++) {
+                int x = GetRandomValue(0, WIDTH * zoomFactor);
+                int y = GetRandomValue(0, HEIGHT * zoomFactor);
+               
+                for (int i = -5; i <= 5; i++) {
+                    for (int j = -5; j <= 5; j++) {
+                        if (GetRandomValue(0, 10) > 6)
+                            DrawPixel(x + i, y + j, WHITE);
+                    }
+                }
+            }
+        }
+
         EndTextureMode();
 
         current = 1 - current;
@@ -61,9 +79,8 @@ int main() {
         ClearBackground(BLACK);
         DrawTexturePro(frames[current].texture, (Rectangle){0, 0, frames[current].texture.width, -frames[current].texture.height}, 
                        (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()}, 
-                       (Vector2){0, 0}, 0.0f, WHITE);
+                       (Vector2){0, 0}, 0.0f, RED);
         EndDrawing();
-        // WaitTime(0.5); if you want :)
     }
 
     CloseWindow();
