@@ -41,11 +41,25 @@ int main() {
             }
         }
     EndTextureMode();
+    
+    int currentCol = 0;
 
     while (!WindowShouldClose()) {
+        Color frameColors[9] = { RED, GRAY, BLUE, YELLOW, PINK, ORANGE, GREEN, PURPLE, WHITE }; 
+        Color currentColor = frameColors[currentCol];
+        
         if (IsKeyPressed(KEY_SPACE)) {
-            isPlay = true;
-            PlaySound(BgS);
+            if(!isPlay) {
+                isPlay = true;
+                PlaySound(BgS);
+            }
+        }
+        
+        int length = sizeof(frameColors) / sizeof(frameColors[0]) - 1;
+        if (IsKeyPressed(KEY_C)) {
+            if(currentCol >= length) {
+                currentCol = 0;
+            } else currentCol += 1;
         }
         
         if (IsKeyPressed(KEY_KP_ADD)) {
@@ -63,7 +77,7 @@ int main() {
         frames[current].texture.width, 
         -frames[current].texture.height}, 
                        (Rectangle){0, 0, WIDTH * zoomFactor, HEIGHT * zoomFactor}, 
-                       (Vector2){0, 0}, 0.0f, RED);
+                       (Vector2){0, 0}, 0.0f, currentColor);
         EndShaderMode();
 
         if (IsKeyDown(KEY_KP_SUBTRACT) && zoomFactor > 0.2f) {
@@ -86,11 +100,14 @@ int main() {
 
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawTexturePro(frames[current].texture, (Rectangle){0, 0, frames[current].texture.width, -frames[current].texture.height}, 
+        DrawTexturePro(frames[current].texture, (Rectangle){
+        0, 0, 
+        frames[current].texture.width, 
+        -frames[current].texture.height}, 
                        (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()}, 
-                       (Vector2){0, 0}, 0.0f, RED);
+                       (Vector2){0, 0}, 0.0f, currentColor);
         if(!isPlay) DrawText("Press SPACE to PLAY the sound!", 30, 30, 15, WHITE);
-        
+        DrawText("Press 'C' to Change Color", 30, 60, 15, WHITE);
         EndDrawing();
     }
     
