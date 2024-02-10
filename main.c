@@ -11,7 +11,11 @@ int main() {
     InitWindow(WIDTH, HEIGHT, "GPU Game Of Life");
     ToggleFullscreen();
     SetTargetFPS(60);
-
+    
+    InitAudioDevice();
+    Sound BgS = LoadSound("./muzic/can_t-stop-coming-_mp3cut.net_.ogg");
+    bool isPlay = false;
+    
     RenderTexture2D frames[2];
     frames[0] = LoadRenderTexture(WIDTH * SCALE, HEIGHT * SCALE);
     SetTextureWrap(frames[0].texture, TEXTURE_WRAP_REPEAT);
@@ -25,7 +29,7 @@ int main() {
     Vector2 resolution = {(WIDTH * SCALE), (HEIGHT * SCALE)};
     int resolution_loc = GetShaderLocation(gol_shader, "resolution");
     SetShaderValue(gol_shader, resolution_loc, &resolution, SHADER_UNIFORM_VEC2);
-
+    
     float zoomFactor = 0.5f;
 
     BeginTextureMode(frames[0]);
@@ -39,6 +43,11 @@ int main() {
     EndTextureMode();
 
     while (!WindowShouldClose()) {
+        if (IsKeyPressed(KEY_SPACE)) {
+            isPlay = true;
+            PlaySound(BgS);
+        }
+        
         if (IsKeyPressed(KEY_KP_ADD)) {
             zoomFactor += 0.1f;
         } else if (IsKeyPressed(KEY_KP_SUBTRACT)) {
@@ -80,8 +89,13 @@ int main() {
         DrawTexturePro(frames[current].texture, (Rectangle){0, 0, frames[current].texture.width, -frames[current].texture.height}, 
                        (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()}, 
                        (Vector2){0, 0}, 0.0f, RED);
+        if(!isPlay) DrawText("Press SPACE to PLAY the sound!", 30, 30, 15, WHITE);
+        
         EndDrawing();
     }
-
+    
+    UnloadSound(BgS);     
+    CloseAudioDevice();
     CloseWindow();
+    return 0;
 }
