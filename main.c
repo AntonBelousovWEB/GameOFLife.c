@@ -13,7 +13,7 @@ int main() {
     SetTargetFPS(60);
     
     InitAudioDevice();
-    Sound BgS = LoadSound("./muzic/can_t-stop-coming-_mp3cut.net_.ogg");
+    Sound BgS = LoadSound("./resources/muzic/can_t-stop-coming-_mp3cut.net_.ogg");
     bool isPlay = false;
     
     RenderTexture2D frames[2];
@@ -25,7 +25,7 @@ int main() {
     SetTextureFilter(frames[1].texture, TEXTURE_FILTER_POINT);
     int current = 0;
 
-    Shader gol_shader = LoadShader(NULL, "gol.glsl");
+    Shader gol_shader = LoadShader(NULL, "./resources/gol.glsl");
     Vector2 resolution = {(WIDTH * SCALE), (HEIGHT * SCALE)};
     int resolution_loc = GetShaderLocation(gol_shader, "resolution");
     SetShaderValue(gol_shader, resolution_loc, &resolution, SHADER_UNIFORM_VEC2);
@@ -45,7 +45,7 @@ int main() {
     int currentCol = 0;
 
     while (!WindowShouldClose()) {
-        Color frameColors[9] = { RED, GRAY, BLUE, YELLOW, PINK, ORANGE, GREEN, PURPLE, WHITE }; 
+        Color frameColors[13] = { RED, GRAY, BLUE, YELLOW, PINK, ORANGE, GREEN, PURPLE, WHITE, GOLD, BROWN, LIME, MAGENTA }; 
         Color currentColor = frameColors[currentCol];
         
         if (IsKeyPressed(KEY_SPACE)) {
@@ -55,13 +55,16 @@ int main() {
             }
         }
         
-        int length = sizeof(frameColors) / sizeof(frameColors[0]) - 1;
-        if (IsKeyPressed(KEY_C)) {
-            if(currentCol >= length) {
-                currentCol = 0;
-            } else currentCol += 1;
-        }
+        int length = sizeof(frameColors) / sizeof(frameColors[0]);
         
+        if (IsKeyPressed(KEY_RIGHT)) {
+            currentCol = (currentCol + 1 >= length) ? 0 : currentCol + 1;
+        }
+        if (IsKeyPressed(KEY_LEFT)) {
+            currentCol = (currentCol - 1 < 0) ? length - 1 : currentCol - 1;
+        }
+
+
         if (IsKeyPressed(KEY_KP_ADD)) {
             zoomFactor += 0.1f;
         } else if (IsKeyPressed(KEY_KP_SUBTRACT)) {
@@ -107,7 +110,8 @@ int main() {
                        (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()}, 
                        (Vector2){0, 0}, 0.0f, currentColor);
         if(!isPlay) DrawText("Press SPACE to PLAY the sound!", 30, 30, 15, WHITE);
-        DrawText("Press 'C' to Change Color", 30, 60, 15, WHITE);
+        DrawText("Press '<- or ->' to Change Color", 30, 60, 15, WHITE);
+        DrawText(TextFormat("%d", currentCol + 1), 30, 90, 20, WHITE);
         EndDrawing();
     }
     
