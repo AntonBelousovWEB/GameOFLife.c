@@ -55,6 +55,10 @@ int main() {
             }
         }
         
+        if (IsSoundPlaying(BgS) == false && isPlay == true) {
+            PlaySound(BgS);
+        }
+        
         int length = sizeof(frameColors) / sizeof(frameColors[0]);
         
         if (IsKeyPressed(KEY_RIGHT)) {
