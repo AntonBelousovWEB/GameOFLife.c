@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <raylib.h>
 
 #define WIDTH 1920
@@ -6,6 +7,7 @@
 #define SCALE 0.5
 
 #define NUM_ISLANDS 100
+#define MAX_SOUNDS 10
 
 int main() {
     InitWindow(WIDTH, HEIGHT, "GPU Game Of Life");
@@ -13,8 +15,21 @@ int main() {
     SetTargetFPS(60);
     
     InitAudioDevice();
-    Sound BgS = LoadSound("./resources/muzic/can_t-stop-coming-_mp3cut.net_.ogg");
-    bool isPlay = false;
+    Sound sounds[MAX_SOUNDS];
+    int numSounds = 0;
+    for (int i = 0; i < MAX_SOUNDS; i++) {
+        char filename[64];
+        sprintf(filename, "./resources/muz/sound%d.ogg", i);
+        sounds[i] = LoadSound(filename);
+        if (sounds[i].stream.buffer != NULL) {
+            numSounds++;
+        } else {
+            UnloadSound(sounds[i]);
+            break;
+        }
+    }
+
+    int currentSoundIndex = 0;
     bool isReSpawn = false;
     
     RenderTexture2D frames[2];
@@ -50,14 +65,16 @@ int main() {
         Color currentColor = frameColors[currentCol];
         
         if (IsKeyPressed(KEY_SPACE)) {
-            if(!isPlay) {
-                isPlay = true;
-                PlaySound(BgS);
+            if(currentSoundIndex >= numSounds) {
+                StopSound(sounds[currentSoundIndex - 1]);
+                currentSoundIndex = 0;
+            } else {
+                if (currentSoundIndex > 0) {
+                    StopSound(sounds[currentSoundIndex - 1]);
+                }
+                PlaySound(sounds[currentSoundIndex]);
+                currentSoundIndex += 1;
             }
-        }
-        
-        if (IsSoundPlaying(BgS) == false && isPlay == true) {
-            PlaySound(BgS);
         }
         
         int length = sizeof(frameColors) / sizeof(frameColors[0]);
@@ -120,13 +137,13 @@ int main() {
         -frames[current].texture.height}, 
                        (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()}, 
                        (Vector2){0, 0}, 0.0f, currentColor);
-        if(!isPlay) DrawText("Press SPACE to PLAY the sound!", 30, 30, 15, WHITE);
+        DrawText("Press SPACE to PLAY the sound!", 30, 30, 15, WHITE);
         DrawText(TextFormat("Press '<- or ->' to Change Color %d", currentCol + 1), 30, 60, 15, WHITE);
         DrawText((isReSpawn ? "Turn OFF respawn 'R Ctrl'" : "Turn ON respawn 'R Ctrl'"), 30, 90, 15, WHITE);
         EndDrawing();
     }
     
-    UnloadSound(BgS);     
+      
     CloseAudioDevice();
     CloseWindow();
     return 0;
