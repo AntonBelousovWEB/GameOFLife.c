@@ -13,11 +13,23 @@ Welcome to the GPU implementation of Conway's Game of Life! This project explore
   
 In this project, the game evolves on the GPU, offering potentially significant performance improvements compared to traditional CPU-based implementations.
 
-### Zooming and Panning Instructions:
+### Instructions:
+- Zoom:
+  - To zoom in, use the `+` key - `MUMLK`.
+  - To zoom out, use the `-` key - `MUMLK`.
+  - Press the corresponding key again to stop zooming or panning.
 
-- To zoom in, use the `+` key - `MUMLK`.
-- To zoom out, use the `-` key - `MUMLK`.
-- Press the corresponding key again to stop zooming or panning.
+- Switch Colors:
+  - To switch forward use `->` key.
+  - To go back use `<-` key.
 
+- Play Sound:
+  - To play sounds use `SPACE` key.
+  - To upload your music use the `muz` folder in the `resources` folder
+  - Use `.ogg` files named `sound` + `index file`. Example: `sound1.ogg`.
+
+- Respawn:
+  - To turn on respawn pixels use `Right CTRL` key.
+  - To turn off respawn pixels use `Right CTRL` key.
 
 Happy coding!
