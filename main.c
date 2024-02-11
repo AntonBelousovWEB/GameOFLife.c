@@ -15,6 +15,7 @@ int main() {
     InitAudioDevice();
     Sound BgS = LoadSound("./resources/muzic/can_t-stop-coming-_mp3cut.net_.ogg");
     bool isPlay = false;
+    bool isReSpawn = false;
     
     RenderTexture2D frames[2];
     frames[0] = LoadRenderTexture(WIDTH * SCALE, HEIGHT * SCALE);
@@ -33,13 +34,13 @@ int main() {
     float zoomFactor = 0.5f;
 
     BeginTextureMode(frames[0]);
-        ClearBackground(BLACK);
-        for (int i = 0; i < (WIDTH * SCALE); i++) {
-            for (int j = 0; j < (HEIGHT * SCALE); j++) {
-                float color = (float)(rand() % 2);
-                DrawPixel(i, j, ColorFromNormalized((Vector4){color, color, color, 1.0}));
-            }
+    ClearBackground(BLACK);
+    for (int i = 0; i < (WIDTH * SCALE); i++) {
+        for (int j = 0; j < (HEIGHT * SCALE); j++) {
+            float color = (float)(rand() % 2);
+            DrawPixel(i, j, ColorFromNormalized((Vector4){color, color, color, 1.0}));
         }
+    }
     EndTextureMode();
     
     int currentCol = 0;
@@ -86,20 +87,26 @@ int main() {
                        (Rectangle){0, 0, WIDTH * zoomFactor, HEIGHT * zoomFactor}, 
                        (Vector2){0, 0}, 0.0f, currentColor);
         EndShaderMode();
+        
+        if (IsKeyDown(KEY_RIGHT_CONTROL)) {
+            isReSpawn = !isReSpawn;
+        }
 
-        if (IsKeyDown(KEY_KP_SUBTRACT) && zoomFactor > 0.2f) {
-            for (int k = 0; k < NUM_ISLANDS; k++) {
-                int x = GetRandomValue(0, WIDTH * zoomFactor);
-                int y = GetRandomValue(0, HEIGHT * zoomFactor);
-               
+        for (int k = 0; k < (isReSpawn ? 1 : NUM_ISLANDS); k++) {
+            int x = GetRandomValue(0, WIDTH * zoomFactor);
+            int y = GetRandomValue(0, HEIGHT * zoomFactor);
+
+            if ((!isReSpawn && IsKeyDown(KEY_KP_SUBTRACT) && zoomFactor > 0.2f) || isReSpawn) {
                 for (int i = -5; i <= 5; i++) {
                     for (int j = -5; j <= 5; j++) {
-                        if (GetRandomValue(0, 10) > 6)
+                        if (GetRandomValue(0, 10) > 6) {
                             DrawPixel(x + i, y + j, WHITE);
+                        }
                     }
                 }
             }
         }
+
 
         EndTextureMode();
 
@@ -114,8 +121,8 @@ int main() {
                        (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()}, 
                        (Vector2){0, 0}, 0.0f, currentColor);
         if(!isPlay) DrawText("Press SPACE to PLAY the sound!", 30, 30, 15, WHITE);
-        DrawText("Press '<- or ->' to Change Color", 30, 60, 15, WHITE);
-        DrawText(TextFormat("%d", currentCol + 1), 30, 90, 20, WHITE);
+        DrawText(TextFormat("Press '<- or ->' to Change Color %d", currentCol + 1), 30, 60, 15, WHITE);
+        DrawText((isReSpawn ? "Turn OFF respawn 'R Ctrl'" : "Turn ON respawn 'R Ctrl'"), 30, 90, 15, WHITE);
         EndDrawing();
     }
     
