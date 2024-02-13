@@ -59,6 +59,7 @@ int main() {
     EndTextureMode();
     
     int currentCol = 0;
+    bool isGameStarted = false;
 
     while (!WindowShouldClose()) {
         Color frameColors[13] = { RED, GRAY, BLUE, YELLOW, PINK, ORANGE, GREEN, PURPLE, WHITE, GOLD, BROWN, LIME, MAGENTA }; 
@@ -94,52 +95,67 @@ int main() {
             if (zoomFactor < 0.1f) zoomFactor = 0.1f; 
         }
 
-        BeginTextureMode(frames[1 - current]);
-        ClearBackground(BLACK);
-        BeginShaderMode(gol_shader);
-        DrawTexturePro(frames[current].texture, (Rectangle){
-        0, 0, 
-        frames[current].texture.width, 
-        -frames[current].texture.height}, 
-                       (Rectangle){0, 0, WIDTH * zoomFactor, HEIGHT * zoomFactor}, 
-                       (Vector2){0, 0}, 0.0f, currentColor);
-        EndShaderMode();
-        
         if (IsKeyDown(KEY_RIGHT_CONTROL)) {
             isReSpawn = !isReSpawn;
         }
 
-        for (int k = 0; k < (isReSpawn ? 1 : NUM_ISLANDS); k++) {
-            int x = GetRandomValue(0, WIDTH * zoomFactor);
-            int y = GetRandomValue(0, HEIGHT * zoomFactor);
+        if (IsKeyPressed(KEY_ENTER)) {
+            isGameStarted = true;
+        }
 
-            if ((!isReSpawn && IsKeyDown(KEY_KP_SUBTRACT) && zoomFactor > 0.2f) || isReSpawn) {
-                for (int i = -5; i <= 5; i++) {
-                    for (int j = -5; j <= 5; j++) {
-                        if (GetRandomValue(0, 10) > 6) {
-                            DrawPixel(x + i, y + j, WHITE);
+        if (isGameStarted) {
+            BeginTextureMode(frames[1 - current]);
+            ClearBackground(BLACK);
+            BeginShaderMode(gol_shader);
+            DrawTexturePro(frames[current].texture, (Rectangle){
+                0, 0, 
+                frames[current].texture.width, 
+                -frames[current].texture.height}, 
+                           (Rectangle){0, 0, WIDTH * zoomFactor, HEIGHT * zoomFactor}, 
+                           (Vector2){0, 0}, 0.0f, currentColor);
+            EndShaderMode();
+            
+            for (int k = 0; k < (isReSpawn ? 1 : NUM_ISLANDS); k++) {
+                int x = GetRandomValue(0, WIDTH * zoomFactor);
+                int y = GetRandomValue(0, HEIGHT * zoomFactor);
+
+                if ((!isReSpawn && IsKeyDown(KEY_KP_SUBTRACT) && zoomFactor > 0.2f) || isReSpawn) {
+                    for (int i = -5; i <= 5; i++) {
+                        for (int j = -5; j <= 5; j++) {
+                            if (GetRandomValue(0, 10) > 6) {
+                                DrawPixel(x + i, y + j, WHITE);
+                            }
                         }
                     }
                 }
             }
+
+            EndTextureMode();
+
+            current = 1 - current;
         }
-
-
-        EndTextureMode();
-
-        current = 1 - current;
 
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawTexturePro(frames[current].texture, (Rectangle){
-        0, 0, 
-        frames[current].texture.width, 
-        -frames[current].texture.height}, 
-                       (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()}, 
-                       (Vector2){0, 0}, 0.0f, currentColor);
-        DrawText("Press SPACE to PLAY the sound!", 30, 30, 15, WHITE);
-        DrawText(TextFormat("Press '<- or ->' to Change Color %d", currentCol + 1), 30, 60, 15, WHITE);
-        DrawText((isReSpawn ? "Turn OFF respawn 'R Ctrl'" : "Turn ON respawn 'R Ctrl'"), 30, 90, 15, WHITE);
+
+        if (!isGameStarted) {
+            DrawText("Press ENTER to Life", (
+                GetScreenWidth() - MeasureText("Press ENTER to Life", 20)) / 
+                2, GetScreenHeight() / 
+                2, 20, WHITE
+            );
+        } else {
+            DrawTexturePro(frames[current].texture, (Rectangle){
+                0, 0, 
+                frames[current].texture.width, 
+                -frames[current].texture.height}, 
+                           (Rectangle){0, 0, GetScreenWidth(), GetScreenHeight()}, 
+                           (Vector2){0, 0}, 0.0f, currentColor);
+            DrawText("Press SPACE to PLAY the sound!", 30, 30, 15, WHITE);
+            DrawText(TextFormat("Press '<- or ->' to Change Color %d", currentCol + 1), 30, 60, 15, WHITE);
+            DrawText((isReSpawn ? "Turn OFF respawn 'R Ctrl'" : "Turn ON respawn 'R Ctrl'"), 30, 90, 15, WHITE);
+        }
+        
         EndDrawing();
     }
     
